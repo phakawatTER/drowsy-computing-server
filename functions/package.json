@@ -1,0 +1,40 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "prod": "node index.js"
+  },
+  "engines": {
+    "node": "8"
+  },
+  "dependencies": {
+    "@firebase/storage": "^0.3.26",
+    "async": "^3.1.0",
+    "blob": "^0.1.0",
+    "body-parser": "^1.19.0",
+    "child_process": "^1.0.2",
+    "connect-mysql": "^2.2.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "exec": "^0.2.1",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "filereader": "^0.10.3",
+    "firebase": "^7.2.1",
+    "firebase-admin": "^8.6.0",
+    "firebase-functions": "^3.3.0",
+    "js-sha512": "^0.8.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.27",
+    "mysql": "^2.18.1",
+    "node-blob": "0.0.2",
+    "socket.io": "^2.3.0",
+    "util": "^0.12.1"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^0.1.6"
+  },
+  "private": true
+}
