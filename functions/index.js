@@ -193,7 +193,7 @@ app.post("/api/v1/user/logout", (req, res) => {
     console.log(token)
     console.log(uid, from)
     loginRef.child(`${uid}/${from}`).orderByChild("token").equalTo(token).once("value", snapshot => {
-        // 
+        //
         let key = null
         // SET KEY
         Object.keys(snapshot.val()).map(_key => {
@@ -212,7 +212,7 @@ app.post("/api/v1/user/logout", (req, res) => {
 // HANDLE USER LOG IN
 app.post("/api/v1/user/login", (req, res) => {
     const { username, password, from } = req.body
-    // If inputs are not all filled 
+    // If inputs are not all filled
     if (!username || !password || !from) {
         return res.json({ code: 500, message: "Invalid inputs; please check your payload inputs " })
     }
@@ -354,9 +354,11 @@ app.post("/api/v1/update/gas", (req, res) => {
     )
 })
 
+
+//  generate acctime for trip and strart python process to process streamed image from jetson nano board
 app.post("/api/v1/createtrip", async (req, res) => {
     const { uid, token, pushToken } = req.body
-    const acctime = moment(new Date()).unix().toString() // UNIX TIME 
+    const acctime = moment(new Date()).unix().toString() // UNIX TIME
     const userTrips = userTripsRef.child(uid).push()
     const tokenIsOk = await checkUserActiveToken(uid)
 
@@ -373,16 +375,18 @@ app.post("/api/v1/createtrip", async (req, res) => {
                     fetched.then(response => response.json()).then(response => {
                         let { data } = response
                         let { status } = data[0]
-                        let python_process = spawn("python3.6", [`./imageprocessing/processimage2.py`, `-u`, ` ${uid}`, `-a`, acctime, `-t`, token, `-x`, pushToken])
+                        let python_process = spawn("py", [`-3.6`, `./imageprocessing/processimage2.py`, `-u`, ` ${uid}`, `-a`, acctime, `-t`, token, `-x`, pushToken])
                         python_process.stdout.on("data", data => {
-                            data = String(data).split("__END__")[0]
+                            data = String(data)
+                            console.log(data.length)
+                            data = (data).split("__END__")[0]
                             try {
                                 data = JSON.parse(data)
                                 let { uid } = data
-				console.log(`image sent at ${moment().unix()}`)
+                                // console.log(`image sent at ${moment().unix()}`)
                                 // emit livestream data to client on mobile application / web
                                 image_io.emit(`live_stream_${uid}`, data)
-                            } catch(err){}
+                            } catch (err) { }
                         })
                         python_process.stdout.on("end", data => {
                             console.log("Trip ended")
