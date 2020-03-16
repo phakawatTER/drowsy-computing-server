@@ -24,7 +24,11 @@ const Blob = require("node-blob")
 const app = express()
 const server = require("http").createServer(app)
 const io = require("socket.io").listen(server)
+const middle_io = require("socket.io").listen(process.env.MIDDLE_SERVER_SOCKET) # CONNECT TO MIDDLE SERVER SOCKET FOR IMAGE STREAMING
 const image_io = require("socket.io")(process.env.SOCKET_PORT)
+const PYTHON_SCRIPT_PATH =  "/home/phakawat/imageprocessing/processimage2.py"
+const LANDMARK_MODEL_PATH = "/home/phakawat/models/c5.h5"
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 
@@ -227,12 +231,12 @@ app.post("/api/v1/createtrip", async (req, res) => {
             let title = `New trip has started. Let's check it out!`
             let message = `Trip start at ${moment().tz("Asia/Bangkok").format("YYYY/MM/DD HH:mm:ss")}`
             try {
-                let python_process = spawn("python", [`C:/Users/peter/Desktop/imageprocessing/processimage2.py`,
+                let python_process = spawn("python", [PYTHON_SCRIPT_PATH,
                     `-u`, ` ${uid}`,
                     `-a`, acctime,
                     `-t`, token,
                     `-x`, pushToken,
-                    '--landmark-model', 'F:/AI-Stuffs/TRAINING_FACE/models5/c5.h5'
+                    '--landmark-model', LANDMARK_MODEL_PATH
                 ])
                 let _data = {}
                 let user_id = ""
