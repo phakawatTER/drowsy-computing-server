@@ -219,7 +219,6 @@ app.post("/api/v1/createtrip", async (req, res) => {
     const acctime = moment(new Date()).unix().toString() // UNIX TIME
     const userTrips = userTripsRef.child(uid).push()
     const tokenIsOk = await checkUserActiveToken(uid)
-
     userTrips.set({
         acctime: acctime
     }, err => {
@@ -228,46 +227,42 @@ app.post("/api/v1/createtrip", async (req, res) => {
             let title = `New trip has started. Let's check it out!`
             let message = `Trip start at ${moment().tz("Asia/Bangkok").format("YYYY/MM/DD HH:mm:ss")}`
             try {
+                let python_process = spawn("python", [`C:/Users/peter/Desktop/imageprocessing/processimage2.py`,
+                    `-u`, ` ${uid}`,
+                    `-a`, acctime,
+                    `-t`, token,
+                    `-x`, pushToken,
+                    '--landmark-model', 'F:/AI-Stuffs/TRAINING_FACE/models5/c5.h5'
+                ])
+                let _data = {}
+                let user_id = ""
+                let frame_sender = setInterval(() => {
+                    if (user_id == "") return
+                    console.log("FRAME SENT ...", user_id)
+                    image_io.emit(`live_stream_${user_id}`, _data)
+                }, 80)
+
+                python_process.stdout.on("data", data => {
+                    try {
+                        data = (data).split("__END__")[0]
+                        data = JSON.parse(data)
+                        let { uid } = data
+                        _data = data
+                        user_id = uid
+                        // image_io.emit(`live_stream_${uid}`, data)
+                    } catch (err) { }
+                })
+                python_process.stdout.on("end", data => {
+                    clearInterval(frame_sender)
+                    console.log("Trip ended")
+                })
                 if (tokenIsOk) {
                     let fetched = pushNotification(title, message, pushToken)
                     fetched.then(response => response.json()).then(response => {
                         let { data } = response
                         let { status } = data[0]
-                        // let python_process = spawn("py", [`C:/Users/peter/Desktop/imageprocessing/processimage2.py`, `-u`, ` ${uid}`, `-a`, acctime, `-t`, token, `-x`, pushToken])
-                        let python_process = spawn("python", [`C:/Users/peter/Desktop/imageprocessing/processimage2.py`,
-                            `-u`, ` ${uid}`,
-                            `-a`, acctime,
-                            `-t`, token,
-                            `-x`, pushToken,
-                            '--landmark-model', 'F:/AI-Stuffs/TRAINING_FACE/models5/c5.h5'
-                        ])
-                        let _data = {}
-                        let user_id = ""
-                        let frame_sender = setInterval(() => {
-                            if (user_id == "") return
-                            console.log("FRAME SENT ...", user_id)
-                            image_io.emit(`live_stream_${user_id}`, _data)
-                        }, 80)
-
-                        python_process.stdout.on("data", data => {
-                            try {
-                                data = (data).split("__END__")[0]
-                                data = JSON.parse(data)
-                                let { uid } = data
-                                _data = data
-                                user_id = uid
-                                // image_io.emit(`live_stream_${uid}`, data)
-                            } catch (err) { }
-                        })
-                        python_process.stdout.on("end", data => {
-                            clearInterval(frame_sender)
-                            console.log("Trip ended")
-                        })
                         return ([
                             res.json({ acctime: acctime, code: 200, message: "Successfully get acctime" }),
-                            // exec(`py -3.6 ./imageprocessing/processimage2.py -u " ${uid}" -a ${acctime} -t ${token} -x ${pushToken} `),
-                            // exec(`py -3.6 ./imageprocessing/processimage2.py -u " ${uid}" -a ${acctime} -t ${token} -x ${pushToken} `),
-                            console.log(`py -3.6 C:/Users/peter.Desktop.imageprocessing/processimage2.py -u " ${uid}" -a ${acctime} -t ${token} -x ${pushToken} `)
                         ])
                     }).catch(err => {
                         return res.json({ code: 500, message: "Failed to create trip", err })
@@ -275,11 +270,8 @@ app.post("/api/v1/createtrip", async (req, res) => {
                 } else {
                     return ([
                         res.json({ acctime: acctime, code: 200, message: "Successfully get acctime" }),
-                        exec(`py -3.6 ./imageprocessing/processimage2.py -u " ${uid}" -a ${acctime} -t ${token} -x ${pushToken} `),
-                        console.log(`py -3.6 ./imageprocessing/processimage2.py -u " ${uid}" -a ${acctime} -t ${token} -x ${pushToken} `)
                     ])
                 }
-
             } catch (err) {
                 console.log(err)
                 return res.json({ code: 500, message: "Failed to create trip", err })
