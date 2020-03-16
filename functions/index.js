@@ -25,25 +25,15 @@ const app = express()
 const server = require("http").createServer(app)
 const io = require("socket.io").listen(server)
 const image_io = require("socket.io")(process.env.SOCKET_PORT)
-const PORT = process.env.PORT
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
-const SQLOption = {
-    config: {
 
-        host: process.env.SESSION_SQL_HOST,
-        user: process.env.SESSION_SQL_USER,
-        password: process.env.SESSION_SQL_PASSWORD,
-        database: process.env.SESSION_SQL_DATABASE
-    }
-}
 app.use(session({
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
-    // store: new MySQLStore(SQLOption),
     cookie: {
-        maxAge: 1000 * 3600 * 24 * 365
+        maxAge: 1000 * 3600 * 24 * 365 // 1000 years token expire
     },
 }))
 app.use(cors());
@@ -86,39 +76,6 @@ io.on("connection", (socket) => {
     socket.on("connect", () => {
         console.log("socket connected ...")
     })
-    // ON FACE FOUND EVENT
-    socket.on("face_found", async data => {
-        console.log("[INFO] face found event triggered ... ")
-        let { uid, expoPushToken, b64img } = data
-        b64img = String(b64img)
-        let tokenIsOk = await checkUserActiveToken(uid)
-        if (tokenIsOk) {
-            title = "Unknown Face Detected!!"
-            message = `Detected at ${moment().tz("Asia/Bangkok").format("YYYY-MM-DD HH:mm:ss")}`
-            pushNotification(title, message, expoPushToken)
-        }
-        let faceStorage = storageRef.child("driver/face")
-        try {
-            console.log(b64img)
-            let task = faceStorage.putString(b64img)
-            task.on("state_changed",
-                snapshot => { }, // DO NOTHING
-                err => { console.log(err) }, // DO NOTHING
-                () => {
-                    task.snapshot.ref.getDownloadURL().then(url => {
-                        // insert data to firebase database
-                        newFaceRef.child(uid).push().set({
-                            url,
-                            read: false,
-                            timestamp: moment().format("YYYY-MM-DD HH:mm:ss")
-                        })
-                    })
-                }
-            )
-        } catch (err) { console.log(err) }
-
-
-    })
 })
 
 const checkUserActiveToken = async (uid) => {
@@ -153,39 +110,6 @@ const pushNotification = async (title, message, token) => {
     return response
 }
 
-app.post("/api/v1/user/register", (req, res) => {
-    const {
-        fname,
-        lname,
-        email,
-        password,
-        mobile
-    } = req.body
-
-    userRef.orderByChild("email").equalTo(email).once("value", (snapshot) => {
-        let matched_user = snapshot.val()
-        if (!matched_user) {
-            userRef.push().set({
-                fname: fname,
-                lname: lname,
-                password: password,
-                mobile: mobile,
-                email: email,
-                regisdate: moment().tz("Asia/Bangkok").format("YYYY-MM-DD HH:mm:ss")
-            }, (err) => {
-                if (err) return res.json({ code: 400, message: "unable to register this user" })
-                else return res.json({ code: 200, message: "successfully registered user" })
-            })
-        } else {
-            return res.json({
-                code: 410,
-                message: "This email has been taken"
-            })
-        }
-    })
-})
-
-
 // HANDLE USER LOG OUT
 app.post("/api/v1/user/logout", (req, res) => {
     const { token } = req.headers
@@ -205,10 +129,9 @@ app.post("/api/v1/user/logout", (req, res) => {
             if (err) return res.json({ code: 500, message: "Unable destroy your token" })
             else return res.json({ code: 200, message: "logout successfully" })
         })
-
-
     })
 })
+
 // HANDLE USER LOG IN
 app.post("/api/v1/user/login", (req, res) => {
     const { username, password, from } = req.body
@@ -260,42 +183,6 @@ app.post("/api/v1/user/login", (req, res) => {
 })
 
 
-
-app.post("/api/v1/user/getrecord", (req, res) => {
-    const { user_id, from } = req.body
-    const { token } = req.header
-    var ref = loginRef.child(user_id).child(from).orderByKey().limitToLast(1)
-    ref.once("value", (snapshot) => {
-        // console.log("TEST NAJA :",snapshot.val())
-        if (snapshot.val()) {
-            let loginInfo = null
-            Object.keys(snapshot.val()).map(key => {
-                loginInfo = snapshot.val()[key]
-            })
-            let latestToken = loginInfo[token]
-            // If token isnt expired
-            if (latestToken === token) {
-                const resultRef = notificationRef.child(user_id).orderByKey()
-                resultRef.once("value", (snapshot) => {
-                    if (snapshot.val()) {
-                        var arrayOfRecord = Object.values(snapshot.val()).reverse()
-                        return res.json({ code: 200, result: arrayOfRecord })
-                    } else {
-                        console.log(snapshot.val())
-                        return res.json({ code: 200, result: [] })
-                    }
-                })
-            } else {
-                return res.json({ code: 400, message: "Your token is expired" })
-            }
-        } else {
-            return res.json({ code: 500, message: "No collection found" })
-        }
-    })
-
-})
-
-
 // PUSH NOTIFICATION
 app.post("/api/v1/notify", (req, res) => {
     const { user_id, event, token } = req.body
@@ -323,35 +210,6 @@ app.post("/api/v1/notify", (req, res) => {
             })
         }
     })
-})
-
-app.post("/api/v1/update/location", (req, res) => {
-    const { uid, lat, lng } = req.body
-    let userLocation = locationRef.child(uid).push()
-    userLocation.set({
-        lat: lat,
-        lng: lng
-    }, err => {
-        if (err)
-            return res.json({ code: 500, message: "Unable to push current location of the user" })
-        else
-            return res.json({ code: 200, message: "Successfully update user current location" })
-    }
-    )
-})
-
-app.post("/api/v1/update/gas", (req, res) => {
-    const { uid, co } = req.body
-    let userGas = gasRef.child(uid).push()
-    userGas.set({
-        co: co
-    }, err => {
-        if (err)
-            return res.json({ code: 500, message: "Unable to push current gas level of the user" })
-        else
-            return res.json({ code: 200, message: "Successfully update user current gas" })
-    }
-    )
 })
 
 
@@ -430,79 +288,6 @@ app.post("/api/v1/createtrip", async (req, res) => {
     })
 })
 
-app.post("/api/v1/update/tripdata", (req, res) => {
-    const { acctime, uid, latlng, co, speed, direction } = req.body
-    const trip = tripRef.child(`${uid}/${acctime}`).push()
-    io.emit(`trip_update_${uid}`, req.body)
-    // console.log(req.body)
-    trip.set({
-        latlng: latlng,
-        co: co,
-        speed: speed,
-        direction: direction,
-        timestamp: moment(new Date()).unix()
-    }, err => {
-        if (err) res.json({ code: 500, message: "failed to update tripdata" })
-        else res.json({ code: 200, message: "successfully update tripdata" })
-    })
+server.listen(process.env.PORT, () => {
+    console.log("Listening at port " + process.env.PORT)
 })
-
-
-app.post("/api/v1/getalltrips", (req, res) => {
-    const { uid, from } = req.body
-    const { token: userToken } = req.headers
-    const userRef = loginRef.child(`${uid}/${from}`).orderByKey().limitToLast(1)
-    userRef.once("value", snapshot => {
-        let latestLogin = snapshot.val()
-        let loginInfo = null
-        Object.keys(latestLogin).map(key => {
-            loginInfo = latestLogin[key]
-        })
-        let { token: latestToken } = loginInfo
-        // console.log(loginInfo)
-        if (userToken == latestToken) {
-            let trips = userTripsRef.child(uid)
-            trips.once("value", tripSnapshot => {
-                let alltrips = tripSnapshot.val()
-                return res.json({ code: 200, trips: alltrips, message: "successfully request user all trips" })
-            })
-        } else {
-            return res.json({ code: 400, message: "Invalid token", token1: userToken, token2: latestToken })
-        }
-    })
-})
-
-app.post("/api/v1/gettripdata", (req, res) => {
-    const { uid, from, acctime } = req.body
-    const { token: userToken } = req.headers
-    const userRef = loginRef.child(`${uid}/${from}`).orderByKey().limitToLast(1)
-    userRef.once("value", snapshot => {
-        let latestLogin = snapshot.val()
-        let loginInfo = null
-        Object.keys(latestLogin).map(key => {
-            loginInfo = latestLogin[key]
-        })
-        let { token: latestToken } = loginInfo
-        console.log(loginInfo)
-        if (userToken === latestToken) {
-            let trip = tripRef.child(`${uid}/${acctime}`)
-            trip.once("value", tripSnapshot => {
-                let tripData = tripSnapshot.val()
-                return res.json({ code: 200, tripdata: tripData, message: "successfully request trip data" })
-            })
-        } else {
-            return res.json({ code: 400, message: "Invalid token" })
-        }
-    })
-})
-
-
-// app.listen(PORT, () => {
-//     console.log(`listening to port ${PORT}`)
-// })
-
-server.listen(PORT, () => {
-    console.log("Listening at port " + PORT)
-})
-
-// exports.app = functions.https.onRequest(app);
