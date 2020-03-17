@@ -19,13 +19,10 @@ const moment = require("moment-timezone")
 const jwt = require("jsonwebtoken")
 const sha512 = require("js-sha512")
 const Blob = require("node-blob")
-// const FileReader = require("filereader")
-// const fs = require("fs")
 const app = express()
 const server = require("http").createServer(app)
 const io = require("socket.io").listen(server)
-const middle_io = require("socket.io").listen(process.env.MIDDLE_SERVER_SOCKET) # CONNECT TO MIDDLE SERVER SOCKET FOR IMAGE STREAMING
-const image_io = require("socket.io")(process.env.SOCKET_PORT)
+const middle_io = require("socket.io-client")(process.env.MIDDLE_SERVER_SOCKET) // CONNECT TO MIDDLE SERVER SOCKET FOR IMAGE STREAMING
 const PYTHON_SCRIPT_PATH =  "/home/phakawat/imageprocessing/processimage2.py"
 const LANDMARK_MODEL_PATH = "/home/phakawat/models/c5.h5"
 
@@ -231,30 +228,33 @@ app.post("/api/v1/createtrip", async (req, res) => {
             let title = `New trip has started. Let's check it out!`
             let message = `Trip start at ${moment().tz("Asia/Bangkok").format("YYYY/MM/DD HH:mm:ss")}`
             try {
-                let python_process = spawn("python", [PYTHON_SCRIPT_PATH,
+                let python_process = spawn("/home/bipul/anaconda3/envs/tf_gpu/bin/python", [PYTHON_SCRIPT_PATH,
                     `-u`, ` ${uid}`,
                     `-a`, acctime,
                     `-t`, token,
                     `-x`, pushToken,
                     '--landmark-model', LANDMARK_MODEL_PATH
                 ])
+		console.log(`python ${PYTHON_SCRIPT_PATH} -u " ${uid}" -a ${acctime} -t ${token} -x " ${pushToken}" --landmark-model ${LANDMARK_MODEL_PATH}`)
                 let _data = {}
                 let user_id = ""
                 let frame_sender = setInterval(() => {
                     if (user_id == "") return
                     console.log("FRAME SENT ...", user_id)
-                    image_io.emit(`live_stream_${user_id}`, _data)
+                    middle_io.emit(`livestream`, _data)
                 }, 80)
 
                 python_process.stdout.on("data", data => {
+		    data = String(data) //parse string from bytes
+		    console.log(data.length)
                     try {
                         data = (data).split("__END__")[0]
                         data = JSON.parse(data)
                         let { uid } = data
                         _data = data
                         user_id = uid
-                        // image_io.emit(`live_stream_${uid}`, data)
-                    } catch (err) { }
+                    } catch (err) {
+		    }
                 })
                 python_process.stdout.on("end", data => {
                     clearInterval(frame_sender)
