@@ -4,7 +4,6 @@ const dotenv = require("dotenv")
 dotenv.config()
 const mysql = require("mysql")
 const express = require("express");
-
 const session = require("express-session");
 const MySQLStore = require("connect-mysql")(session);
 const firebase = require("firebase")
@@ -19,12 +18,15 @@ const moment = require("moment-timezone")
 const jwt = require("jsonwebtoken")
 const sha512 = require("js-sha512")
 const Blob = require("node-blob")
+const fs = require("fs")
+const path = require("path")
 const app = express()
 const server = require("http").createServer(app)
 const io = require("socket.io").listen(server)
 const middle_io = require("socket.io-client")(process.env.MIDDLE_SERVER_SOCKET) // CONNECT TO MIDDLE SERVER SOCKET FOR IMAGE STREAMING
-const PYTHON_SCRIPT_PATH =  "/home/phakawat/imageprocessing/processimage2.py"
-const LANDMARK_MODEL_PATH = "/home/phakawat/models/c5.h5"
+const PYTHON_SCRIPT_PATH =  process.env.PYTHON_SCRIPT_PATH
+const PYTHON_COMMAND_PATH = process.env.PYTHON_COMMAND_PATH
+const LANDMARK_MODEL_PATH = process.env.LANDMARK_MODEL_PATH
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
@@ -63,9 +65,23 @@ var gasRef = databaseRef.child("gaslevel")
 // reference  to storage
 var storageRef = firebase.storage().ref()
 
-
 io.on("connection", (socket) => {
+    socket.on("obd_update_data",data=>{
+        const { acctime, uid, latlng, co, speed, direction } = data 
+        console.log(data)
+        const trip = tripRef.child(`${uid}/${acctime}`).push()
+        middle_io.emit("obd_update_data",data) // send data to middle server
+        // push new data into firebase server... 
+        trip.set({
+            latlng:latlng,
+            co:co,
+            speed:speed,
+            direction:direction,
+            timestamp:moment(new Date()).unix()
+        })
+    })
     socket.on("send_image", (data) => {
+	console.log("Image Recieved ...")
         let { jpg_text, uid } = data
         delete data["jpg_text"]
         io.emit(`image_${uid}`, { jpg_text: String(jpg_text), ...data })
@@ -73,9 +89,6 @@ io.on("connection", (socket) => {
     })
     socket.on("disconnect", () => {
         console.log("socket disconnected ...")
-    })
-    socket.on("connect", () => {
-        console.log("socket connected ...")
     })
 })
 
@@ -216,7 +229,7 @@ app.post("/api/v1/notify", (req, res) => {
 
 //  generate acctime for trip and strart python process to process streamed image from jetson nano board
 app.post("/api/v1/createtrip", async (req, res) => {
-    const { uid, token, pushToken } = req.body
+    const {tracker_id, uid, token, pushToken } = req.body
     const acctime = moment(new Date()).unix().toString() // UNIX TIME
     const userTrips = userTripsRef.child(uid).push()
     const tokenIsOk = await checkUserActiveToken(uid)
@@ -228,34 +241,22 @@ app.post("/api/v1/createtrip", async (req, res) => {
             let title = `New trip has started. Let's check it out!`
             let message = `Trip start at ${moment().tz("Asia/Bangkok").format("YYYY/MM/DD HH:mm:ss")}`
             try {
-                let python_process = spawn("/home/bipul/anaconda3/envs/tf_gpu/bin/python", [PYTHON_SCRIPT_PATH,
+                let python_process = spawn(PYTHON_COMMAND_PATH, [PYTHON_SCRIPT_PATH,
+                    `--tracker-id`,tracker_id,
                     `-u`, ` ${uid}`,
                     `-a`, acctime,
                     `-t`, token,
-                    `-x`, pushToken,
+                    `-x`, `"${pushToken}"`,
                     '--landmark-model', LANDMARK_MODEL_PATH
                 ])
-		console.log(`python ${PYTHON_SCRIPT_PATH} -u " ${uid}" -a ${acctime} -t ${token} -x " ${pushToken}" --landmark-model ${LANDMARK_MODEL_PATH}`)
-                let _data = {}
-                let user_id = ""
-                let frame_sender = setInterval(() => {
-                    if (user_id == "") return
-                    console.log("FRAME SENT ...", user_id)
-                    middle_io.emit(`livestream`, _data)
-                }, 80)
-
-                python_process.stdout.on("data", data => {
-		    data = String(data) //parse string from bytes
-		    console.log(data.length)
-                    try {
-                        data = (data).split("__END__")[0]
-                        data = JSON.parse(data)
-                        let { uid } = data
-                        _data = data
-                        user_id = uid
-                    } catch (err) {
-		    }
-                })
+                // console PYTHON SCRIPT USED TO RUN THE PROCESS
+        		console.log(PYTHON_COMMAND_PATH, PYTHON_SCRIPT_PATH,
+                    `--tracker-id`,tracker_id,
+                    `-u`, ` ${uid}`,
+                    `-a`, acctime,
+                    `-t`, token,
+                    `-x`, `"${pushToken}"`,
+                    '--landmark-model', LANDMARK_MODEL_PATH)
                 python_process.stdout.on("end", data => {
                     clearInterval(frame_sender)
                     console.log("Trip ended")
@@ -283,6 +284,8 @@ app.post("/api/v1/createtrip", async (req, res) => {
         }
     })
 })
+
+
 
 server.listen(process.env.PORT, () => {
     console.log("Listening at port " + process.env.PORT)
