@@ -1,0 +1,759 @@
+
+{
+  "header": {
+    "reportVersion": 2,
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20200407.202318.6885.0.001.json",
+    "dumpEventTime": "2020-04-07T20:23:18Z",
+    "dumpEventTimeStamp": "1586265798213",
+    "processId": 6885,
+    "threadId": null,
+    "cwd": "/home/phakawat/drowsy-computing-server/functions",
+    "commandLine": [
+      "node",
+      "/usr/lib/node_modules/pm2/lib/ProcessContainerFork.js"
+    ],
+    "nodejsVersion": "v13.11.0",
+    "glibcVersionRuntime": "2.23",
+    "glibcVersionCompiler": "2.17",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "linux",
+    "componentVersions": {
+      "node": "13.11.0",
+      "v8": "7.9.317.25-node.29",
+      "uv": "1.34.2",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "79",
+      "nghttp2": "1.40.0",
+      "napi": "6",
+      "llhttp": "2.0.4",
+      "openssl": "1.1.1d",
+      "cldr": "36.0",
+      "icu": "65.1",
+      "tz": "2019c",
+      "unicode": "12.1"
+    },
+    "release": {
+      "name": "node",
+      "headersUrl": "https://nodejs.org/download/release/v13.11.0/node-v13.11.0-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v13.11.0/node-v13.11.0.tar.gz"
+    },
+    "osName": "Linux",
+    "osRelease": "4.15.0-88-generic",
+    "osVersion": "#88~16.04.1-Ubuntu SMP Wed Feb 12 04:19:15 UTC 2020",
+    "osMachine": "x86_64",
+    "cpus": [
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1047,
+        "user": 5236600,
+        "nice": 0,
+        "sys": 4479600,
+        "idle": 1933106100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1000,
+        "user": 5527800,
+        "nice": 0,
+        "sys": 4941600,
+        "idle": 1933963700,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1000,
+        "user": 5187100,
+        "nice": 0,
+        "sys": 4752200,
+        "idle": 1934800200,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1150,
+        "user": 5550500,
+        "nice": 4400,
+        "sys": 4788200,
+        "idle": 1934442600,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 2644,
+        "user": 5465000,
+        "nice": 0,
+        "sys": 4469400,
+        "idle": 1934833700,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1245,
+        "user": 5085500,
+        "nice": 0,
+        "sys": 4038400,
+        "idle": 1935753100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1102,
+        "user": 4738800,
+        "nice": 31800,
+        "sys": 3756700,
+        "idle": 1936432200,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1294,
+        "user": 5245000,
+        "nice": 0,
+        "sys": 3266200,
+        "idle": 1936198600,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1239,
+        "user": 4699800,
+        "nice": 0,
+        "sys": 3557900,
+        "idle": 1936728700,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1001,
+        "user": 4520100,
+        "nice": 12100,
+        "sys": 3238200,
+        "idle": 1936961300,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1990,
+        "user": 7159200,
+        "nice": 300,
+        "sys": 5617400,
+        "idle": 1931955800,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1277,
+        "user": 7157100,
+        "nice": 0,
+        "sys": 4764800,
+        "idle": 1932913500,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1001,
+        "user": 7389000,
+        "nice": 0,
+        "sys": 4559200,
+        "idle": 1932811700,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 2159,
+        "user": 6658700,
+        "nice": 3400,
+        "sys": 4474400,
+        "idle": 1933796000,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 2196,
+        "user": 6493600,
+        "nice": 5800,
+        "sys": 4284100,
+        "idle": 1934022400,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1200,
+        "user": 6781600,
+        "nice": 0,
+        "sys": 4269100,
+        "idle": 1933824100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1965,
+        "user": 5916500,
+        "nice": 16200,
+        "sys": 4176000,
+        "idle": 1934711700,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1363,
+        "user": 6635700,
+        "nice": 500,
+        "sys": 4182400,
+        "idle": 1933986500,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1880,
+        "user": 5581900,
+        "nice": 20900,
+        "sys": 4071800,
+        "idle": 1935171400,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1267,
+        "user": 5711200,
+        "nice": 0,
+        "sys": 4006400,
+        "idle": 1935180900,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1012,
+        "user": 5038600,
+        "nice": 21100,
+        "sys": 3519800,
+        "idle": 1936134700,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1003,
+        "user": 5500100,
+        "nice": 0,
+        "sys": 5213000,
+        "idle": 1933793800,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1007,
+        "user": 5053000,
+        "nice": 0,
+        "sys": 4695900,
+        "idle": 1934929900,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1118,
+        "user": 5273200,
+        "nice": 4200,
+        "sys": 4769200,
+        "idle": 1934554100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 2685,
+        "user": 4903200,
+        "nice": 0,
+        "sys": 4269000,
+        "idle": 1935476600,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1003,
+        "user": 4619100,
+        "nice": 12500,
+        "sys": 3914600,
+        "idle": 1936368100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1004,
+        "user": 4659200,
+        "nice": 100,
+        "sys": 3608200,
+        "idle": 1936560200,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1013,
+        "user": 4944500,
+        "nice": 1100,
+        "sys": 3533200,
+        "idle": 1936343400,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1244,
+        "user": 4608200,
+        "nice": 300,
+        "sys": 3363600,
+        "idle": 1936811400,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1002,
+        "user": 4642800,
+        "nice": 500,
+        "sys": 3304800,
+        "idle": 1936869900,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 2142,
+        "user": 6261600,
+        "nice": 0,
+        "sys": 4005300,
+        "idle": 1934552900,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 2022,
+        "user": 5811700,
+        "nice": 0,
+        "sys": 4478800,
+        "idle": 1934603400,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1000,
+        "user": 5744500,
+        "nice": 1000,
+        "sys": 4177000,
+        "idle": 1934807800,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1643,
+        "user": 6038100,
+        "nice": 0,
+        "sys": 4271100,
+        "idle": 1934500300,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1972,
+        "user": 5736000,
+        "nice": 0,
+        "sys": 4247200,
+        "idle": 1934778300,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1028,
+        "user": 5569600,
+        "nice": 0,
+        "sys": 3956600,
+        "idle": 1935325900,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1290,
+        "user": 5867100,
+        "nice": 12700,
+        "sys": 4004300,
+        "idle": 1934873200,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1991,
+        "user": 6270200,
+        "nice": 0,
+        "sys": 3916200,
+        "idle": 1934539100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1099,
+        "user": 5931800,
+        "nice": 0,
+        "sys": 3832800,
+        "idle": 1935066500,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz",
+        "speed": 1321,
+        "user": 5206800,
+        "nice": 0,
+        "sys": 3881400,
+        "idle": 1935748600,
+        "irq": 0
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "lo",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "127.0.0.1",
+        "netmask": "255.0.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "eno1",
+        "internal": false,
+        "mac": "ac:1f:6b:a1:b9:fe",
+        "address": "172.17.1.56",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "lo",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "::1",
+        "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "eno1",
+        "internal": false,
+        "mac": "ac:1f:6b:a1:b9:fe",
+        "address": "fe80::4b3b:2705:dc9d:9797",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 2
+      }
+    ],
+    "host": "siitgis-SYS-7049GP-TRT"
+  },
+  "javascriptStack": {
+    "message": "No stack.",
+    "stack": [
+      "Unavailable."
+    ]
+  },
+  "nativeStack": [
+    {
+      "pc": "0x0000000000b4ea05",
+      "symbol": "report::TriggerNodeReport(v8::Isolate*, node::Environment*, char const*, char const*, std::string const&, v8::Local<v8::String>) [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x0000000000a10baf",
+      "symbol": "node::OnFatalError(char const*, char const*) [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x0000000000b859ce",
+      "symbol": "v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x0000000000b85d49",
+      "symbol": "v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x0000000000d34255",
+      "symbol": " [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x0000000000d348e6",
+      "symbol": "v8::internal::Heap::RecomputeLimits(v8::internal::GarbageCollector) [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x0000000000d43159",
+      "symbol": "v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector, v8::GCCallbackFlags) [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x0000000000d43f95",
+      "symbol": "v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x0000000000d46a6c",
+      "symbol": "v8::internal::Heap::AllocateRawWithRetryOrFailSlowPath(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x0000000000d0d644",
+      "symbol": "v8::internal::Factory::NewFillerObject(int, bool, v8::internal::AllocationType, v8::internal::AllocationOrigin) [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x000000000105a93e",
+      "symbol": "v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    },
+    {
+      "pc": "0x00000000013de0d9",
+      "symbol": " [node /home/phakawat/drowsy-computing-server/functions/inde]"
+    }
+  ],
+  "javascriptHeap": {
+    "totalMemory": 2153910272,
+    "totalCommittedMemory": 2150186488,
+    "usedMemory": 2145308488,
+    "availableMemory": 48477376,
+    "memoryLimit": 2197815296,
+    "heapSpaces": {
+      "read_only_space": {
+        "memorySize": 262144,
+        "committedMemory": 33328,
+        "capacity": 33040,
+        "used": 33040,
+        "available": 0
+      },
+      "new_space": {
+        "memorySize": 4194304,
+        "committedMemory": 1207360,
+        "capacity": 2094848,
+        "used": 163280,
+        "available": 1931568
+      },
+      "old_space": {
+        "memorySize": 2141335552,
+        "committedMemory": 2140992392,
+        "capacity": 2138329864,
+        "used": 2137783928,
+        "available": 545936
+      },
+      "code_space": {
+        "memorySize": 1216512,
+        "committedMemory": 1051776,
+        "capacity": 908928,
+        "used": 908928,
+        "available": 0
+      },
+      "map_space": {
+        "memorySize": 1314816,
+        "committedMemory": 1314688,
+        "capacity": 904400,
+        "used": 904400,
+        "available": 0
+      },
+      "large_object_space": {
+        "memorySize": 5537792,
+        "committedMemory": 5537792,
+        "capacity": 5512128,
+        "used": 5512128,
+        "available": 0
+      },
+      "code_large_object_space": {
+        "memorySize": 49152,
+        "committedMemory": 49152,
+        "capacity": 2784,
+        "used": 2784,
+        "available": 0
+      },
+      "new_large_object_space": {
+        "memorySize": 0,
+        "committedMemory": 0,
+        "capacity": 2094848,
+        "used": 0,
+        "available": 2094848
+      }
+    }
+  },
+  "resourceUsage": {
+    "userCpuSeconds": 1454.2,
+    "kernelCpuSeconds": 169.359,
+    "cpuConsumptionPercent": 20.5125,
+    "maxRss": 2289950720,
+    "pageFaults": {
+      "IORequired": 9,
+      "IONotRequired": 17168739
+    },
+    "fsActivity": {
+      "reads": 1904,
+      "writes": 16
+    }
+  },
+  "uvthreadResourceUsage": {
+    "userCpuSeconds": 795.519,
+    "kernelCpuSeconds": 139.992,
+    "cpuConsumptionPercent": 11.8195,
+    "fsActivity": {
+      "reads": 1904,
+      "writes": 16
+    }
+  },
+  "libuv": [
+  ],
+  "workers": [
+  ],
+  "environmentVariables": {
+    "kill_retry_time": "100",
+    "windowsHide": "true",
+    "username": "bipul",
+    "treekill": "true",
+    "automation": "true",
+    "pmx": "true",
+    "instance_var": "NODE_APP_INSTANCE",
+    "watch": "false",
+    "autorestart": "true",
+    "vizion": "true",
+    "merge_logs": "true",
+    "env": "[object Object]",
+    "namespace": "default",
+    "name": "index",
+    "node_args": "",
+    "pm_exec_path": "/home/phakawat/drowsy-computing-server/functions/index.js",
+    "pm_cwd": "/home/phakawat/drowsy-computing-server/functions",
+    "exec_interpreter": "node",
+    "exec_mode": "fork_mode",
+    "instances": "1",
+    "pm_out_log_path": "/home/bipul/.pm2/logs/index-out.log",
+    "pm_err_log_path": "/home/bipul/.pm2/logs/index-error.log",
+    "pm_pid_path": "/home/bipul/.pm2/pids/index-0.pid",
+    "km_link": "false",
+    "vizion_running": "false",
+    "NODE_APP_INSTANCE": "0",
+    "PM2_USAGE": "CLI",
+    "P9K_TTY": "old",
+    "CONDA_PROMPT_MODIFIER": "(base) ",
+    "CONDA_DEFAULT_ENV": "base",
+    "CONDA_PREFIX": "/home/bipul/anaconda3",
+    "CONDA_SHLVL": "1",
+    "CONDA_PYTHON_EXE": "/home/bipul/anaconda3/bin/python",
+    "_CE_CONDA": "",
+    "_CE_M": "",
+    "CONDA_EXE": "/home/bipul/anaconda3/bin/conda",
+    "P9K_SSH": "1",
+    "LS_COLORS": "rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:",
+    "LSCOLORS": "Gxfxcxdxbxegedabagacad",
+    "LESS": "-R",
+    "PAGER": "less",
+    "ZSH": "/home/bipul/.oh-my-zsh",
+    "OLDPWD": "/home/phakawat",
+    "_": "/usr/bin/pm2",
+    "LC_NAME": "th_TH.UTF-8",
+    "LC_TIME": "th_TH.UTF-8",
+    "LC_TERMINAL": "iTerm2",
+    "XDG_RUNTIME_DIR": "/run/user/1001",
+    "LC_CTYPE": "UTF-8",
+    "SSH_CONNECTION": "172.17.5.248 56760 172.17.1.56 22",
+    "LOGNAME": "bipul",
+    "LC_TERMINAL_VERSION": "3.3.9",
+    "HOME": "/home/bipul",
+    "SHLVL": "2",
+    "LC_MEASUREMENT": "th_TH.UTF-8",
+    "LANG": "en_US.UTF-8",
+    "PWD": "/home/phakawat/drowsy-computing-server/functions",
+    "LC_IDENTIFICATION": "th_TH.UTF-8",
+    "PATH": "/home/bipul/anaconda3/bin:/home/bipul/anaconda3/condabin:/home/bipul/bin:/home/bipul/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games",
+    "MAIL": "/var/mail/bipul",
+    "LC_TELEPHONE": "th_TH.UTF-8",
+    "USER": "bipul",
+    "SSH_TTY": "/dev/pts/9",
+    "LC_NUMERIC": "th_TH.UTF-8",
+    "SSH_CLIENT": "172.17.5.248 56760 22",
+    "SHELL": "/bin/bash",
+    "TERM": "xterm-256color",
+    "LC_MONETARY": "th_TH.UTF-8",
+    "XDG_SESSION_ID": "13",
+    "LC_ADDRESS": "th_TH.UTF-8",
+    "LC_PAPER": "th_TH.UTF-8",
+    "PM2_HOME": "/home/bipul/.pm2",
+    "unique_id": "e68ea1a8-3edd-4e35-ade1-46507065d5a5",
+    "status": "launching",
+    "pm_uptime": "1586257882422",
+    "axm_actions": "",
+    "axm_monitor": "[object Object]",
+    "axm_options": "[object Object]",
+    "axm_dynamic": "[object Object]",
+    "created_at": "1586257882294",
+    "pm_id": "0",
+    "restart_time": "45",
+    "unstable_restarts": "0",
+    "versioning": "[object Object]",
+    "node_version": "13.11.0",
+    "prev_restart_delay": "0",
+    "exit_code": "0",
+    "SESSION_SQL_HOST": "68.183.178.189",
+    "SESSION_SQL_USER": "phakawat",
+    "SESSION_SQL_PASSWORD": "042830597",
+    "SESSION_SQL_DATABASE": "user_session",
+    "SQL_HOST": "68.183.178.189",
+    "SQL_USER": "phakawat",
+    "SQL_PASSWORD": "042830597",
+    "SQL_DATABASE": "drowsy_database",
+    "MAIL_SERVICE": "hotmail",
+    "MAIL_USER": "phakawat_ter@hotmail.com",
+    "MAIL_PASSWORD": "0956695637Pt",
+    "PORT": "4000",
+    "SOCKET_PORT": "4050",
+    "MIDDLE_SERVER_SOCKET": "http://178.128.92.31:4000",
+    "PYTHON_SCRIPT_PATH": "/home/phakawat/imageprocessing/processimage.py",
+    "PYTHON_COMMAND_PATH": "/home/bipul/anaconda3/envs/tf-cv/bin/python",
+    "LANDMARK_MODEL_PATH": "/home/phakawat/models/c5.h5"
+  },
+  "userLimits": {
+    "core_file_size_blocks": {
+      "soft": 0,
+      "hard": "unlimited"
+    },
+    "data_seg_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "file_size_blocks": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_locked_memory_bytes": {
+      "soft": 65536,
+      "hard": 65536
+    },
+    "max_memory_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "open_files": {
+      "soft": 1048576,
+      "hard": 1048576
+    },
+    "stack_size_bytes": {
+      "soft": 8388608,
+      "hard": "unlimited"
+    },
+    "cpu_time_seconds": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_user_processes": {
+      "soft": 513564,
+      "hard": 513564
+    },
+    "virtual_memory_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    }
+  },
+  "sharedObjects": [
+    "/lib/x86_64-linux-gnu/libdl.so.2",
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6",
+    "/lib/x86_64-linux-gnu/libm.so.6",
+    "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+    "/lib/x86_64-linux-gnu/libpthread.so.0",
+    "/lib/x86_64-linux-gnu/libc.so.6",
+    "/lib64/ld-linux-x86-64.so.2",
+    "/home/phakawat/drowsy-computing-server/functions/node_modules/grpc/src/node/extension_binary/node-v79-linux-x64-glibc/grpc_node.node",
+    "/lib/x86_64-linux-gnu/libnss_files.so.2",
+    "/lib/x86_64-linux-gnu/libnss_mdns4_minimal.so.2",
+    "/lib/x86_64-linux-gnu/libnss_dns.so.2",
+    "/lib/x86_64-linux-gnu/libresolv.so.2"
+  ]
+}

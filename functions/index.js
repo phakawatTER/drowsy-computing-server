@@ -66,7 +66,8 @@ var gasRef = databaseRef.child("gaslevel")
 var storageRef = firebase.storage().ref()
 
 io.on("connection", (socket) => {
-    socket.on("obd_update_data",data=>{
+console.log("client connected ...")  
+  socket.on("obd_update_data",data=>{
         const { acctime, uid, latlng, co, speed, direction } = data 
         console.log(data)
         const trip = tripRef.child(`${uid}/${acctime}`).push()
@@ -81,8 +82,8 @@ io.on("connection", (socket) => {
         })
     })
     socket.on("send_image", (data) => {
-	console.log("Image Recieved ...")
         let { jpg_text, uid } = data
+//        console.log("IMAGE RECIEVED at",moment().tz("Asia/Bangkok").format("YYYY-MM-DD HH:mm:ss"),uid)
         delete data["jpg_text"]
         io.emit(`image_${uid}`, { jpg_text: String(jpg_text), ...data })
         //image_io.emit(`live_stream_${uid}`, { jpg_text: String(jpg_text), ...data })
@@ -123,6 +124,13 @@ const pushNotification = async (title, message, token) => {
     })
     return response
 }
+
+app.post("/api/v1/test/connection",(req,res)=>{
+    return  res.json({"code":200,"test":"connection is ok"})
+})
+
+
+
 
 // HANDLE USER LOG OUT
 app.post("/api/v1/user/logout", (req, res) => {
@@ -199,6 +207,7 @@ app.post("/api/v1/user/login", (req, res) => {
 
 // PUSH NOTIFICATION
 app.post("/api/v1/notify", (req, res) => {
+    console.log(req.body)
     const { user_id, event, token } = req.body
     var notification = notificationRef.child(`${user_id}`).push()
     var id = notification.key
@@ -250,15 +259,22 @@ app.post("/api/v1/createtrip", async (req, res) => {
                     '--landmark-model', LANDMARK_MODEL_PATH
                 ])
                 // console PYTHON SCRIPT USED TO RUN THE PROCESS
-        		console.log(PYTHON_COMMAND_PATH, PYTHON_SCRIPT_PATH,
+                let run_command = [PYTHON_COMMAND_PATH, PYTHON_SCRIPT_PATH,
                     `--tracker-id`,tracker_id,
-                    `-u`, ` ${uid}`,
+                    `-u`,`" ${uid}"`,
                     `-a`, acctime,
                     `-t`, token,
                     `-x`, `"${pushToken}"`,
-                    '--landmark-model', LANDMARK_MODEL_PATH)
+                    '--landmark-model', LANDMARK_MODEL_PATH].join(" ")
+		console.log(run_command)
+		fs.writeFile(`run_command-${uid}.txt`,run_command,err=>{if(err){console.log(err)}else{console.log("Successfully Write Command !")}})
+                
+
+                python_process.stdout.on("data" ,data=>{
+
+                    console.log(data)
+                })
                 python_process.stdout.on("end", data => {
-                    clearInterval(frame_sender)
                     console.log("Trip ended")
                 })
                 if (tokenIsOk) {
@@ -281,6 +297,34 @@ app.post("/api/v1/createtrip", async (req, res) => {
                 console.log(err)
                 return res.json({ code: 500, message: "Failed to create trip", err })
             }
+        }
+    })
+})
+
+app.post("/api/v1/notify", (req, res) => {
+    const { user_id, event, token } = req.body
+    var notification = notificationRef.child(`${user_id}`).push()
+    var id = notification.key
+    notification.set({
+        id,
+        ...req.body,
+        timestamp: moment().tz("Asia/Bangkok").format("YYYY-MM-DD HH:mm:ss"),
+        read: false
+    }, (err) => {
+        if (err) return res.json({ code: 500, message: "Failed to push notification" })
+        else {
+            let title = `Event "${event}" has occured. Let's check it out!`
+            let message = `Occured at ${moment().tz("Asia/Bangkok").format("YYYY/MM/DD HH:mm:ss")}`
+            let fetched = pushNotification(title, message, token)
+            fetched.then(response => response.json()).then(response => {
+                let { data } = response
+                let { status } = data[0]
+                if (status === "ok") {
+                    return res.json({ code: 200, message: "Successfully push notification" })
+                } else {
+                    return res.json({ code: 500, message: "Failed to push notification" })
+                }
+            })
         }
     })
 })
