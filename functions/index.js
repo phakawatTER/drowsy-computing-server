@@ -1,10 +1,14 @@
+const axios = require("axios")
+const get_vdofile = require("./get-vdofile.js").get_vdofile
+const list_vdofile = require("./list-vdofile").list_vdofile
+const fs = require("fs")
+const path = require("path")
 const constants = require("./constants")
 const { sessionSecret } = constants
 const dotenv = require("dotenv")
 dotenv.config()
 const mysql = require("mysql")
 const express = require("express");
-
 const session = require("express-session");
 const MySQLStore = require("connect-mysql")(session);
 const firebase = require("firebase")
@@ -18,14 +22,12 @@ const aync = require("async")
 const moment = require("moment-timezone")
 const jwt = require("jsonwebtoken")
 const sha512 = require("js-sha512")
-const Blob = require("node-blob")
-// const FileReader = require("filereader")
-// const fs = require("fs")
 const app = express()
 const server = require("http").createServer(app)
 const io = require("socket.io").listen(server)
 const image_io = require("socket.io")(process.env.SOCKET_PORT)
 const PORT = process.env.PORT
+const MAPPICO_ENDPOINT = String(process.env.MAPPICO_ENDPOINT).replace("\\/\\/","//")
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 const SQLOption = {
@@ -74,11 +76,15 @@ var storageRef = firebase.storage().ref()
 
 
 io.on("connection", (socket) => {
-    socket.on("send_image", (data) => {
-        let { jpg_text, uid } = data
-        delete data["jpg_text"]
-        io.emit(`image_${uid}`, { jpg_text: String(jpg_text), ...data })
-        //image_io.emit(`live_stream_${uid}`, { jpg_text: String(jpg_text), ...data })
+    console.log("client connected ...")
+     socket.on("obd_update_data",data=>{
+    	let {uid} =data
+            io.emit(`trip_update_${uid}`,data) // send data to middle server                                                                                                                                                                                                                                                         // push new data into firebase server...                                                                                                                                                                                                                                                                                     trip.set({
+    })
+    socket.on("livestream",data=>{
+	let {uid} = data
+	console.log("Livestream Image ...")
+    	image_io.emit(`live_stream_${uid}`, data)
     })
     socket.on("disconnect", () => {
         console.log("socket disconnected ...")
@@ -355,99 +361,6 @@ app.post("/api/v1/update/gas", (req, res) => {
 })
 
 
-//  generate acctime for trip and strart python process to process streamed image from jetson nano board
-app.post("/api/v1/createtrip", async (req, res) => {
-    const { uid, token, pushToken } = req.body
-    const acctime = moment(new Date()).unix().toString() // UNIX TIME
-    const userTrips = userTripsRef.child(uid).push()
-    const tokenIsOk = await checkUserActiveToken(uid)
-
-    userTrips.set({
-        acctime: acctime
-    }, err => {
-        if (err) return res.json({ code: 500, message: "Failed to create trip", err })
-        else {
-            let title = `New trip has started. Let's check it out!`
-            let message = `Trip start at ${moment().tz("Asia/Bangkok").format("YYYY/MM/DD HH:mm:ss")}`
-            try {
-                if (tokenIsOk) {
-                    let fetched = pushNotification(title, message, pushToken)
-                    fetched.then(response => response.json()).then(response => {
-                        let { data } = response
-                        let { status } = data[0]
-                        // let python_process = spawn("py", [`C:/Users/peter/Desktop/imageprocessing/processimage2.py`, `-u`, ` ${uid}`, `-a`, acctime, `-t`, token, `-x`, pushToken])
-                        let python_process = spawn("python", [`C:/Users/peter/Desktop/imageprocessing/processimage2.py`,
-                            `-u`, ` ${uid}`,
-                            `-a`, acctime,
-                            `-t`, token,
-                            `-x`, pushToken,
-                            '--landmark-model', 'F:/AI-Stuffs/TRAINING_FACE/models5/c5.h5'
-                        ])
-                        let _data = {}
-                        let user_id = ""
-                        let frame_sender = setInterval(() => {
-                            if (user_id == "") return
-                            console.log("FRAME SENT ...", user_id)
-                            image_io.emit(`live_stream_${user_id}`, _data)
-                        }, 80)
-
-                        python_process.stdout.on("data", data => {
-                            try {
-                                data = (data).split("__END__")[0]
-                                data = JSON.parse(data)
-                                let { uid } = data
-                                _data = data
-                                user_id = uid
-                                // image_io.emit(`live_stream_${uid}`, data)
-                            } catch (err) { }
-                        })
-                        python_process.stdout.on("end", data => {
-                            clearInterval(frame_sender)
-                            console.log("Trip ended")
-                        })
-                        return ([
-                            res.json({ acctime: acctime, code: 200, message: "Successfully get acctime" }),
-                            // exec(`py -3.6 ./imageprocessing/processimage2.py -u " ${uid}" -a ${acctime} -t ${token} -x ${pushToken} `),
-                            // exec(`py -3.6 ./imageprocessing/processimage2.py -u " ${uid}" -a ${acctime} -t ${token} -x ${pushToken} `),
-                            console.log(`py -3.6 C:/Users/peter.Desktop.imageprocessing/processimage2.py -u " ${uid}" -a ${acctime} -t ${token} -x ${pushToken} `)
-                        ])
-                    }).catch(err => {
-                        return res.json({ code: 500, message: "Failed to create trip", err })
-                    })
-                } else {
-                    return ([
-                        res.json({ acctime: acctime, code: 200, message: "Successfully get acctime" }),
-                        exec(`py -3.6 ./imageprocessing/processimage2.py -u " ${uid}" -a ${acctime} -t ${token} -x ${pushToken} `),
-                        console.log(`py -3.6 ./imageprocessing/processimage2.py -u " ${uid}" -a ${acctime} -t ${token} -x ${pushToken} `)
-                    ])
-                }
-
-            } catch (err) {
-                console.log(err)
-                return res.json({ code: 500, message: "Failed to create trip", err })
-            }
-        }
-    })
-})
-
-app.post("/api/v1/update/tripdata", (req, res) => {
-    const { acctime, uid, latlng, co, speed, direction } = req.body
-    const trip = tripRef.child(`${uid}/${acctime}`).push()
-    io.emit(`trip_update_${uid}`, req.body)
-    // console.log(req.body)
-    trip.set({
-        latlng: latlng,
-        co: co,
-        speed: speed,
-        direction: direction,
-        timestamp: moment(new Date()).unix()
-    }, err => {
-        if (err) res.json({ code: 500, message: "failed to update tripdata" })
-        else res.json({ code: 200, message: "successfully update tripdata" })
-    })
-})
-
-
 app.post("/api/v1/getalltrips", (req, res) => {
     const { uid, from } = req.body
     const { token: userToken } = req.headers
@@ -496,13 +409,73 @@ app.post("/api/v1/gettripdata", (req, res) => {
     })
 })
 
+// return list of user's video
+app.post("/api/v1/get/vdo",async(req,res)=>{
+    const {uid} = req.body
+    try{
+        let vdo = list_vdofile(uid)
+        return res.json({code:200,vdo})
+    }catch(err){res.json({code:500,err})}
+})
 
-// app.listen(PORT, () => {
-//     console.log(`listening to port ${PORT}`)
-// })
+//Stream VDO file to client device
+app.get("/api/v1/get/vdostream/:uid/:file",(req,res)=>{
+        try{
+	console.log("this is request params : ",req.params)
+    	let {uid,file} =req.params
+        let vdo_file = path.join(process.env.VDO_TRIP_DIR,`${uid}_${file}`)
+        let stat = fs.statSync(vdo_file)
+        let fileSize = stat.size
+        const range = req.headers.range
+	if (range) {
+        console.log("CASE VDO STREAM")
+        console.log("RANGE",range)
+	    const parts = range.replace(/bytes=/, "").split("-")
+	    const start = parseInt(parts[0], 10)
+	    const end = parts[1] 
+	      ? parseInt(parts[1], 10)
+	      : fileSize-1
+	    const chunksize = (end-start)+1
+	    const file = fs.createReadStream(vdo_file, {start, end})
+	    const head = {
+	      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+	      'Accept-Ranges': 'bytes',
+	      'Content-Length': chunksize,
+	      'Content-Type': 'video/mp4',
+	    }
+	    res.writeHead(206, head);
+	    file.pipe(res);
+   	  } else {
+        console.log("CASE DOWNLOAD ENTIRE VDO FILE")
+   	    const head = {
+	      'Content-Length': fileSize,
+	      'Content-Type': 'video/mp4',
+	    }
+	    res.writeHead(200, head)
+	    fs.createReadStream(vdo_file).pipe(res)
+	  }
+	}catch(err){
+		return res.json({code:500,message:"failed to stream vdo file",err})
+	}
+
+})
+
+
+app.post("/api/v1/server/download/file",(req,res)=>{
+    const {uid,file} = req.body
+    let vdo_file = path.join(process.env.VDO_TRIP_DIR,`${uid}_${file}`)
+    if (fs.existsSync(vdo_file)){
+        return res.json({code:200,message:"the file is already exist; no need to download"})
+    }else{
+        get_vdofile(uid,file,()=>{
+	    console.log("successfully download file")
+            return res.json ({code:200,message:"successfully download file"})
+        })
+    }
+})
+
 
 server.listen(PORT, () => {
     console.log("Listening at port " + PORT)
 })
 
-// exports.app = functions.https.onRequest(app);
